@@ -32,7 +32,7 @@ function ManageTabla() {
     const columns = [
 
         {
-            title: "Raag Name",
+            title: "Taal Name",
             dataIndex: "raag_name",
             key: "name",
             width: "20%",
@@ -41,7 +41,7 @@ function ManageTabla() {
         },
 
         {
-            title: "Sub Raag Name",
+            title: "Sub Taal Name",
             dataIndex: "sub_raag",
             key: "sub_raag",
             width: "20%",

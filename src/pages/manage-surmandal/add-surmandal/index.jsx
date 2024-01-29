@@ -63,24 +63,22 @@ export default function ManageSurmandal() {
 
     const MusicOptions = [
         {
-            value: 'SA-PA',
-            label: 'SA-PA',
+            value: 'Raag 1',
+            label: 'Raag 1',
         },
         {
-            value: 'SA-MA',
-            label: 'SA-MA',
+            value: 'Raag 2',
+            label: 'Raag 2',
         },
         {
-            value: 'SA-NI',
-            label: 'SA-NI',
+            value: 'Raag 3',
+            label: 'Raag 3',
         },
     ];
 
-    const [selectedValue, setSelectedValue] = useState('100HZ');
-    const [musicValue, setMusicValue] = useState('SA-PA');
-    const [fileSections, setFileSections] = useState([
-        { title: "File 1", bpm: "100HZ" },
-    ]);
+    const [selectedValue, setSelectedValue] = useState('C');
+    const [musicValue, setMusicValue] = useState('Raag 1');
+
 
     const handleCategoryChange = (value) => {
         setSelectedValue(value);
@@ -113,7 +111,7 @@ export default function ManageSurmandal() {
                         <Col md={24}>
                             <Col className={styles.titleBox}>
                                 <SearchCategory
-                                    title="Select type "
+                                    title="Select Raag "
                                     defaultValue={musicValue}
                                     onChange={handleMusicChange}
                                     options={MusicOptions}

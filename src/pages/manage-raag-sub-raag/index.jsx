@@ -56,7 +56,7 @@ export default function ManageCategory() {
         },
 
         {
-            title: "Raag Name",
+            title: "Taal Name",
             dataIndex: "raag_name",
             key: "raag_name",
             width: "25%",
@@ -65,7 +65,7 @@ export default function ManageCategory() {
         },
 
         {
-            title: "Taal Name",
+            title: "Sub Taal Name",
             dataIndex: "taal_name",
             key: "taal_name",
             width: "25%",
@@ -95,7 +95,7 @@ export default function ManageCategory() {
         <div>
             <LayoutHoc>
                 <Col className={`${styles.title}`}>
-                    <h3 style={{    position: "relative",top: "11px"}}>Manage Raag & Taal</h3>
+                    <h3 style={{    position: "relative",top: "11px"}}>Manage Taal & Sub Taal</h3>
                     <Col>
                         <Link href="/manage-raag-sub-raag/add-sub-category">  <FilledButtonComponent>Add Sub Category</FilledButtonComponent></Link>
                         <Link href="/manage-raag-sub-raag/add-category">  <FilledButtonComponent>Add Category</FilledButtonComponent></Link>

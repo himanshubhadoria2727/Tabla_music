@@ -81,7 +81,7 @@ const LayoutHoc = ({ children }) => {
                 ? 'settings active'
                 : 'settings'
             }>
-              <Link href="/manage-raag-sub-raag">Manage Raag & Taal</Link>
+              <Link href="/manage-raag-sub-raag">Manage Taal & Sub Taal</Link>
             </Menu.Item>
             <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-tabla-music' || router.pathname === '/manage-tabla-music/add-tabla-music' ? 'settings active' : 'settings'}>
               <Link href="/manage-tabla-music">Manage Tabla Music</Link>

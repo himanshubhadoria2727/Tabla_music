@@ -44,7 +44,7 @@
 
 .taalInput  {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   width: 100%;
 }
 .taalInput input {

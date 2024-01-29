@@ -8,6 +8,14 @@ body {
 .subCatregory {
   margin: 10px 0 14px;
 }
+.taalInput div {
+  width: 50px!important;
+}
+.taalInput {
+  width: 50px!important;
+  max-width: 62px !important;
+  margin-bottom: 7px;
+}
 .tableBoxed label {
   display: block;
   margin-bottom: 4px;

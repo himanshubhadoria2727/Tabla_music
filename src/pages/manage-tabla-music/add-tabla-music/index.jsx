@@ -61,7 +61,7 @@ export default function AddTabla() {
             value: 'B',
             label: 'B',
         },
-      
+
     ];
 
     const RaagOptions = [
@@ -110,6 +110,8 @@ export default function AddTabla() {
         },
     ];
 
+
+
     const [selectedValue, setSelectedValue] = useState('C');
     const [raagValue, setRaagValue] = useState('Purvi');
     const [subraagValue, setSubRaagValue] = useState('Asaravi');
@@ -152,6 +154,12 @@ export default function AddTabla() {
         console.log('Save button clicked');
     };
 
+    const [inputCount, setInputCount] = useState(1); // State to track the number of input fields
+
+    const handleAddInput = () => {
+        setInputCount(prevCount => prevCount + 1); // Increment input count on plus icon click
+    };
+
     return (
         <LayoutHoc>
             <Col className={styles.title}>
@@ -169,7 +177,7 @@ export default function AddTabla() {
                 </Col>
                 <Col className={styles.titleBox}>
                     <SearchCategory
-                        title="Select Raag Name "
+                        title="Select Taal Name "
                         defaultValue={RaagOptions}
                         onChange={handleRaagChange}
                         options={RaagOptions}
@@ -178,64 +186,71 @@ export default function AddTabla() {
 
                 <Col className={styles.titleBox}>
                     <SearchCategory
-                        title="Select Sub Raag Name"
+                        title="Select Sub Taal Name"
                         defaultValue={subraagValue}
                         onChange={handleSubRaagChange}
                         options={SubRaagOptions}
                     />
                 </Col>
-                <Col className={`${styles.taalBox}`}>
-                            <label>Taal</label>
-                            <Col className={`${styles.taalInput}`}>
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                                <LabelInputComponent />
-                            </Col>
-                        </Col>
-                {fileSections.map((section, index) => (
-                    <Row key={index} className={`${styles.appendRow}`}>
-                        <Col md={11} className={`${styles.fileName}`}>
-                            <Fileuploader
-                                title="Files(Mp3)"
-                                onBpmChange={(bpm) => handleBpmChange(index, bpm)}
-                            />
-                        </Col>
-                          <Col md={1}></Col>
-                        <Col md={12}>
-                            <Col className={`${styles.fileName}`}>
-                                <LabelInputComponent title="BPM" value="100HZ" />
-                            </Col>
-                        </Col>
-                      
-                        {index > 0 && (
-                            <Col style={{ width: "100%" }}>
+                <Col className={styles.taalBox}>
+                    <label>Taal</label>
+                    {/* Render input fields based on inputCount state */}
 
-                                <Image src={IMAGES.Delete} alt="" onClick={() => removeFileSection(index)} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
+                    <Row className={styles.taalInput}>
 
-                            </Col>
-                        )}
-                        <Col >
+                        {[...Array(inputCount)].map((_, index) => (
+                            <>
+                                <Col md={2} key={index} className='taalInput'>
+                                    <LabelInputComponent maxlength="3" />
+                                </Col>
+                            </>
+                        ))}
 
-                            <Image src={IMAGES.Add} onClick={addFileSection} alt="" style={{
-                                cursor: "pointer", height: "20px", width: "20px", position: " relative",
-                                top: "15px"
-                            }} />
-
-                        </Col>
                     </Row>
 
-                ))}
+                    <Col>
+                        <Image src={IMAGES.Add} alt="" style={{ // Image with cursor pointer
+                            cursor: "pointer", height: "20px", width: "20px", position: "relative",
+                            top: "7px"
+                        }} onClick={handleAddInput} /> {/* onClick event to add input */}
+                    </Col>
+                </Col>
+                {
+                    fileSections.map((section, index) => (
+                        <Row key={index} className={`${styles.appendRow}`}>
+                            <Col md={11} className={`${styles.fileName}`}>
+                                <Fileuploader
+                                    title="Files(Mp3)"
+                                    onBpmChange={(bpm) => handleBpmChange(index, bpm)}
+                                />
+                            </Col>
+                            <Col md={1}></Col>
+                            <Col md={12}>
+                                <Col className={`${styles.fileName}`}>
+                                    <LabelInputComponent title="BPM" value="80" />
+                                </Col>
+
+                            </Col>
+
+                            {index > 0 && (
+                                <Col style={{ width: "100%" }}>
+
+                                    <Image src={IMAGES.Delete} alt="" onClick={() => removeFileSection(index)} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
+
+                                </Col>
+                            )}
+                            <Col >
+
+                                <Image src={IMAGES.Add} onClick={addFileSection} alt="" style={{
+                                    cursor: "pointer", height: "20px", width: "20px", position: " relative",
+                                    top: "15px"
+                                }} />
+
+                            </Col>
+                        </Row>
+
+                    ))
+                }
 
 
                 <Col style={{ textAlign: 'end', marginTop: '15px' }}>
@@ -244,8 +259,8 @@ export default function AddTabla() {
                     </FilledButtonComponent>
                 </Col>
 
-            </Col>
+            </Col >
 
-        </LayoutHoc>
+        </LayoutHoc >
     );
 }
