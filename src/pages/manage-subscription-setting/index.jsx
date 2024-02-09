@@ -16,8 +16,11 @@ import SelectDropdownComponent from '@/components/TextFields/selectDropdown'
 import RadioBox from '@/components/TextFields/radioButton'
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
-import { subcriptionapi } from '@/api/subcriptionapi'
+import { addsubcription, deletdsubcription, subcriptionapi } from '@/api/subcriptionapi'
 import moment from 'moment/moment'
+import Swal from 'sweetalert2'
+import { deleteAlertContext } from '@/HOC/alert'
+import { toast } from 'react-toastify'
 
 export default function SubscriptionSetting() {
     const [sub, setsub] = useState([])
@@ -129,6 +132,29 @@ export default function SubscriptionSetting() {
     }, [loading])
 
     console.log(sub, "dhceieii");
+
+    const deleteduser = (id) => {
+        setloading(true)
+
+        Swal.fire(deleteAlertContext).then((data) => {
+            if (data.isConfirmed) {
+                deletdsubcription(id).then((data) => {
+                    console.log(data, "cheking respond is");
+                    Swal.fire("Deleted!", "Your file has been deleted.", "success");
+                    setloading(false);
+                }).catch((err) => {
+                    if (err) {
+                        setloading(false)
+                    }
+                })
+
+
+            }
+            setloading(false)
+        })
+
+    }
+
     if (loading) {
         return <h6>
             loading...
@@ -147,6 +173,20 @@ export default function SubscriptionSetting() {
 
 
                         console.log(values, "sciehui");
+                        setloading(true)
+                        addsubcription(values).then((data) => {
+                            if (data) {
+
+                                setloading(false)
+                                toast.success("plan will be added sucessfully")
+                            }
+
+                        })
+                            .catch(error => {
+                                setloading(false)
+                                console.error("Error adding subscription:", error.response ? error.response.data : error.message);
+                                throw error;
+                            });
                     }}
                 >
                     {({ setFieldValue, values }) => (
@@ -261,9 +301,9 @@ export default function SubscriptionSetting() {
                             creation_date: moment(s?.updatedAt
                             ).format('L'),
                             option: (
-                                <Link href="/edit-user">
-                                    <Image src={IMAGES.Delete} alt="" style={{ width: "20px", height: "20px", objectFit: "contain" }} />
-                                </Link>
+
+                                <Image src={IMAGES.Delete} alt="" style={{ width: "20px", height: "20px", objectFit: "contain" }} onClick={() => deleteduser(s?._id)} />
+
                             ),
                         }
                     ))} colData={columns} />

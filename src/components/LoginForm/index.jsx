@@ -8,9 +8,13 @@ import Image from "next/image";
 import { IMAGES } from "@/assest/images";
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import * as yup from "yup";
+import { login } from "@/api/login";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 
 function LoginForm() {
+  const router = useRouter()
   const initialvalue = {
     email: "",
     password: ""
@@ -37,6 +41,18 @@ function LoginForm() {
 
 
           console.log(values, "sciehui");
+          login(values).then((res) => {
+
+            if (res?.data?.Message === "Invalid Credential") {
+              toast.error('Invalid Credential')
+              return
+            }
+
+            localStorage.setItem("auth_token", res?.data?.token);
+            toast.success('Logged in Succesfully.')
+            router.push('/dashboard')
+
+          })
         }}
       >
         <Form>

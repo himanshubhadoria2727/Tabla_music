@@ -19,7 +19,7 @@ class Client {
 
     createWithAuth = () => {
         const auth_token = localStorage.getItem("auth_token");
-        this.axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
+        this.axios.defaults.headers.post["Content-Type"] = 'application/json';
         this.axios.defaults.headers.common[
             "Authorization"
         ] = `Bearer ${auth_token}`;

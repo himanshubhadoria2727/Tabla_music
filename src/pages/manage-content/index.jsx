@@ -1,13 +1,16 @@
 import LayoutHoc from "@/HOC/LayoutHoc";
 import DataTable from "@/components/Datatable";
 import { Col } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import { IMAGES } from "@/assest/images";
 import { SVG } from "@/assest/svg";
 import DateRangePickerComponent from "@/components/TextFields/datepicker";
+import { allContent, deletedcontent } from "@/api/contentapi";
+import Swal from "sweetalert2";
+import { deleteAlertContext } from "@/HOC/alert";
 const data = [
   {
     key: "1",
@@ -53,17 +56,7 @@ const columns = [
     dataIndex: "action",
     key: "action",
     width: "10%",
-    render: (text, record) => (
-      <span className={`${styles.options}`}>
-        <Link href="/edit-content">
-          <SVG.Edit />
-        </Link>
 
-        <Link href="#">
-          <Image src={IMAGES.Delete} alt="" style={{ width: "20px", height: "20px", objectFit: "contain" }} />
-        </Link>
-      </span>
-    ),
 
   },
 
@@ -72,6 +65,43 @@ const columns = [
 
 export default function ManageContent() {
 
+  const [loading, setloading] = useState(false)
+
+  const [content, setcontent] = useState([])
+
+  useEffect(() => {
+    allContent().then((data) => {
+
+      setcontent(data?.data)
+
+    })
+  }, [loading])
+
+  const deleteduser = (id) => {
+    setloading(true)
+
+    Swal.fire(deleteAlertContext).then((data) => {
+      if (data.isConfirmed) {
+        deletedcontent(id).then((data) => {
+          console.log(data, "cheking respond is");
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          setloading(false);
+        }).catch((err) => {
+          if (err) {
+            setloading(false)
+          }
+        })
+
+
+      }
+      setloading(false)
+    })
+
+  }
+
+  if (loading) {
+    return <h6>Loading....</h6>
+  }
   return (
     <LayoutHoc>
       <Col className={`${styles.title}`}>
@@ -79,7 +109,23 @@ export default function ManageContent() {
         {/* <DateRangePickerComponent/> */}
       </Col>
       <Col className="tableBox">
-        <DataTable rowData={data} colData={columns} />
+        <DataTable rowData={content && content.length > 0 && content.map((data, id) => ({
+          key: id,
+          number: id + 1,
+          pagename: data?.title,
+          action: (
+            <>
+              <Link href="/edit-content">
+                <SVG.Edit />
+              </Link>
+
+
+              <Image src={IMAGES.Delete} alt="" style={{ width: "20px", height: "20px", objectFit: "contain" }} onClick={() => deleteduser(data?._id)} />
+
+
+            </>
+          ),
+        }))} colData={columns} />
       </Col>
     </LayoutHoc>
   );
