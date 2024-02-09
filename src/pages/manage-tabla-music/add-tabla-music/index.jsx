@@ -10,6 +10,7 @@ import { IMAGES } from '@/assest/images';
 import Image from 'next/image';
 import LabelInputComponent from '@/components/TextFields/labelInput';
 import Link from 'next/link';
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 
 export default function AddTabla() {
     const dynamicOptions = [
@@ -159,108 +160,164 @@ export default function AddTabla() {
     const handleAddInput = () => {
         setInputCount(prevCount => prevCount + 1); // Increment input count on plus icon click
     };
+    const initialValues = {
+        pitch: "",
+        taalname: "",
+        subtaalname: "",
+        taal: [{
+            name: ""
+        }],
+        taalfiles: [
+            {
+                filename: "",
+                bpm: ""
+            }
+        ]
+
+
+    }
+
 
     return (
-        <LayoutHoc>
-            <Col className={styles.title}>
-                <h3>Add Tabla Music</h3>
-                <Link href="/manage-tabla-music">  <FilledButtonComponent> <SVG.Arrow /> Back</FilledButtonComponent></Link>
-            </Col>
-            <Col className="tableBox fileAttach">
-                <Col className={styles.titleBox}>
-                    <SearchCategory
-                        title="Select Pitch"
-                        defaultValue={selectedValue}
-                        onChange={handleCategoryChange}
-                        options={dynamicOptions}
-                    />
-                </Col>
-                <Col className={styles.titleBox}>
-                    <SearchCategory
-                        title="Select Taal Name "
-                        defaultValue={RaagOptions}
-                        onChange={handleRaagChange}
-                        options={RaagOptions}
-                    />
-                </Col>
 
-                <Col className={styles.titleBox}>
-                    <SearchCategory
-                        title="Select Sub Taal Name"
-                        defaultValue={subraagValue}
-                        onChange={handleSubRaagChange}
-                        options={SubRaagOptions}
-                    />
-                </Col>
-                <Col className={styles.taalBox}>
-                    <label>Taal</label>
-                    {/* Render input fields based on inputCount state */}
+        <>
+            <LayoutHoc>
 
-                    <Row className={styles.taalInput}>
+                <Formik
+                    initialValues={initialValues}
 
-                        {[...Array(inputCount)].map((_, index) => (
-                            <>
-                                <Col md={2} key={index} className='taalInput'>
-                                    <LabelInputComponent maxlength="3" />
-                                </Col>
-                            </>
-                        ))}
+                    onSubmit={(values) => {
 
-                    </Row>
 
-                    <Col>
-                        <Image src={IMAGES.Add} alt="" style={{ // Image with cursor pointer
-                            cursor: "pointer", height: "20px", width: "20px", position: "relative",
-                            top: "7px"
-                        }} onClick={handleAddInput} /> {/* onClick event to add input */}
-                    </Col>
-                </Col>
-                {
-                    fileSections.map((section, index) => (
-                        <Row key={index} className={`${styles.appendRow}`}>
-                            <Col md={11} className={`${styles.fileName}`}>
-                                <Fileuploader
-                                    title="Files(Mp3)"
-                                    onBpmChange={(bpm) => handleBpmChange(index, bpm)}
-                                />
+                        console.log(values, "sciehui");
+                    }}
+                >
+                    {({ setFieldValue, values }) => (
+                        <Form>
+
+                            <Col className={styles.title}>
+                                <h3>Add Tabla Music</h3>
+                                <Link href="/manage-tabla-music">  <FilledButtonComponent> <SVG.Arrow /> Back</FilledButtonComponent></Link>
                             </Col>
-                            <Col md={1}></Col>
-                            <Col md={12}>
-                                <Col className={`${styles.fileName}`}>
-                                    <LabelInputComponent title="BPM" value="80" />
+                            <Col className="tableBox fileAttach">
+                                <Col className={styles.titleBox}>
+                                    <SearchCategory
+                                        title="Select Pitch"
+                                        defaultValue={selectedValue}
+                                        onChange={(value) => {
+                                            setFieldValue("pitch", value)
+                                        }}
+                                        options={dynamicOptions}
+                                    />
+                                </Col>
+                                <Col className={styles.titleBox}>
+                                    <SearchCategory
+                                        title="Select Taal Name "
+                                        defaultValue={RaagOptions}
+                                        onChange={(value) => {
+                                            setFieldValue("taalname", value)
+                                        }}
+                                        options={RaagOptions}
+                                    />
                                 </Col>
 
-                            </Col>
-
-                            {index > 0 && (
-                                <Col style={{ width: "100%" }}>
-
-                                    <Image src={IMAGES.Delete} alt="" onClick={() => removeFileSection(index)} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
-
+                                <Col className={styles.titleBox}>
+                                    <SearchCategory
+                                        title="Select Sub Taal Name"
+                                        defaultValue={subraagValue}
+                                        onChange={(value) => {
+                                            setFieldValue("subtaalname", value)
+                                        }}
+                                        options={SubRaagOptions}
+                                    />
                                 </Col>
-                            )}
-                            <Col >
+                                <Col className={styles.taalBox}>
+                                    <label>Taal</label>
+                                    {/* Render input fields based on inputCount state */}
 
-                                <Image src={IMAGES.Add} onClick={addFileSection} alt="" style={{
-                                    cursor: "pointer", height: "20px", width: "20px", position: " relative",
-                                    top: "15px"
-                                }} />
+                                    <Row className={styles.taalInput}>
 
-                            </Col>
-                        </Row>
-
-                    ))
-                }
+                                        {values?.taal?.length > 0 && values?.taal.map((tal, index) => (
+                                            <>
+                                                <Col md={2} key={index} className='taalInput'>
+                                                    <LabelInputComponent name={`taal[${index}].name`} />
+                                                </Col>
+                                                {index > 0 && (
 
 
-                <Col style={{ textAlign: 'end', marginTop: '15px' }}>
-                    <FilledButtonComponent className="btn submit" onClick={handleSave}>
-                        Save
-                    </FilledButtonComponent>
-                </Col>
+                                                    <Image src={IMAGES.Delete} alt="" onClick={() => {
+                                                        setFieldValue('taal', values?.taal?.filter((o, i) => i !== index))
+                                                    }} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
 
-            </Col >
 
-        </LayoutHoc >
+                                                )}
+                                            </>
+                                        ))}
+
+                                    </Row>
+
+                                    <Col>
+                                        <Image src={IMAGES.Add} alt="" style={{ // Image with cursor pointer
+                                            cursor: "pointer", height: "20px", width: "20px", position: "relative",
+                                            top: "7px"
+                                        }} onClick={() => {
+                                            setFieldValue('taal', [...values?.taal, { name: "" }])
+                                        }} /> {/* onClick event to add input */}
+                                    </Col>
+                                </Col>
+                                {
+                                    values?.taalfiles?.length > 0 && values?.taalfiles?.map((taalfile, index) => (
+                                        <Row key={index} className={`${styles.appendRow}`}>
+                                            <Col md={11} className={`${styles.fileName}`}>
+                                                <Fileuploader
+                                                    title="Files(Mp3)"
+                                                    setFieldValue={setFieldValue}
+                                                    index={index}
+
+                                                />
+                                            </Col>
+                                            <Col md={1}></Col>
+                                            <Col md={12}>
+                                                <Col className={`${styles.fileName}`}>
+                                                    <LabelInputComponent title="BPM" name={`taalfiles[${index}].bpm`} />
+                                                </Col>
+
+                                            </Col>
+
+                                            {index > 0 && (
+                                                <Col style={{ width: "100%" }}>
+
+                                                    <Image src={IMAGES.Delete} alt="" onClick={() => removeFileSection(index)} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
+
+                                                </Col>
+                                            )}
+                                            <Col >
+
+                                                <Image src={IMAGES.Add} onClick={addFileSection} alt="" style={{
+                                                    cursor: "pointer", height: "20px", width: "20px", position: " relative",
+                                                    top: "15px"
+                                                }} />
+
+                                            </Col>
+                                        </Row>
+
+                                    ))
+                                }
+
+
+                                <Col style={{ textAlign: 'end', marginTop: '15px' }}>
+                                    <button className="btn submit" onClick={handleSave}>
+                                        Save
+                                    </button>
+                                </Col>
+
+                            </Col >
+
+
+                        </Form>
+                    )}
+                </Formik>
+            </LayoutHoc >
+        </>
     );
 }

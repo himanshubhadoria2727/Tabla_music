@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "./subscription.module.css"
 import LayoutHoc from '@/HOC/LayoutHoc'
 import { Col } from 'antd'
@@ -14,34 +14,37 @@ import LabelInputComponent from '@/components/TextFields/labelInput'
 import TextAreaComponent from '@/components/TextFields/textArea'
 import SelectDropdownComponent from '@/components/TextFields/selectDropdown'
 import RadioBox from '@/components/TextFields/radioButton'
+import * as Yup from "yup";
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
+import { subcriptionapi } from '@/api/subcriptionapi'
+import moment from 'moment/moment'
 
 export default function SubscriptionSetting() {
-    const [selectedPlan, setSelectedPlan] = useState('Monthly');
+    const [sub, setsub] = useState([])
+    const [loading, setloading] = useState(false)
 
-    const handlePlanChange = (value) => {
-        setSelectedPlan(value);
+    const initialValues = {
+        planname: '',
+        description: '',
+        plantype: [{
+            country: '',
+            amount: ''
+        }]
     };
-
-    const [planAmounts, setPlanAmounts] = useState(['']);
-
-    const handleAddPlanAmount = () => {
-        setPlanAmounts((prevPlanAmounts) => [...prevPlanAmounts, '']);
-    };
-
-    const handleRemovePlanAmount = (index) => {
-        setPlanAmounts((prevPlanAmounts) => {
-            const updatedPlanAmounts = [...prevPlanAmounts];
-            updatedPlanAmounts.splice(index, 1);
-            return updatedPlanAmounts;
-        });
-    };
+    const planSchema = Yup.object().shape({
+        planname: Yup.string().required('Plan Name is required'),
+        description: Yup.string().required('Description is required'),
+        plantype: Yup.array().of(
+            Yup.object().shape({
+                country: Yup.string().required('Country is required'),
+                amount: Yup.number().required('Amount is required').typeError('Amount must be a number'),
+            })
+        ).required('At least one Plantype is required'),
+    });
 
 
 
-    const handleSelectChange = (value) => {
-        console.log(`Selected: ${value}`);
-        // Add your custom logic here
-    };
+
 
     // Define your dynamic options
     const countryOptions = [
@@ -51,21 +54,7 @@ export default function SubscriptionSetting() {
     ];
 
 
-    const handleCheckBoxChange = (type) => {
-        // Reset all checkboxes
-        setMonthlyChecked(false);
-        setAnnualChecked(false);
-        setBothChecked(false);
 
-        // Set the selected checkbox
-        if (type === 'monthly') {
-            setMonthlyChecked(true);
-        } else if (type === 'annual') {
-            setAnnualChecked(true);
-        } else if (type === 'both') {
-            setBothChecked(true);
-        }
-    };
 
     const data = [
         {
@@ -130,33 +119,66 @@ export default function SubscriptionSetting() {
             key: "option",
         },
     ];
+
+    useEffect(() => {
+        subcriptionapi().then((data) => {
+
+            setsub(data?.data?.data)
+
+        })
+    }, [loading])
+
+    console.log(sub, "dhceieii");
+    if (loading) {
+        return <h6>
+            loading...
+        </h6>
+    }
+
     return (
         <>
             <LayoutHoc>
-                <Col className={`${styles.title}`}>
-                    <h3>Manage Subscription Setting</h3>
-                    {/* <DateRangePickerComponent /> */}
-                </Col>
 
-                <Col className="tableBox">
-                    <h3>Create Subscription</h3>
-                    <Col>
-                        <LabelInputComponent title="Plan name" />
-                        {/* <LabelInputComponent title="Number of Search Allowed" type="number" /> */}
-                        <TextAreaComponent label="Plan Description" placeholder="Description" />
+                <Formik
+                    initialValues={initialValues}
+                    // validationSchema={validationSchema}
 
-                        {planAmounts.map((planAmount, index) => (
+                    onSubmit={(values) => {
 
-                            <Col key={index} style={{ marginTop: "20px" }}>
-                                <Col style={{ marginBottom: "14px", marginTop: "14px" }}>
-                                    <SelectDropdownComponent
-                                        placeholder="Country Selection"
-                                        title="Country Selection"
-                                        options={countryOptions}
-                                        onChange={handleSelectChange}
-                                    />
-                                </Col>
-                                {/* <Col style={{ marginTop: "20px" }}>
+
+                        console.log(values, "sciehui");
+                    }}
+                >
+                    {({ setFieldValue, values }) => (
+                        <Form>
+                            <Col className={`${styles.title}`}>
+                                <h3>Manage Subscription Setting</h3>
+                                {/* <DateRangePickerComponent /> */}
+                            </Col>
+
+                            <Col className="tableBox">
+                                <h3>Create Subscription</h3>
+                                <Col>
+                                    <LabelInputComponent title="Plan name" name="planname" />
+                                    {/* <LabelInputComponent title="Number of Search Allowed" type="number" /> */}
+                                    <TextAreaComponent label="Plan Description" name="description" placeholder="Description" setFieldValue={setFieldValue} />
+
+                                    {values?.plantype?.length > 0 && values?.plantype.map((planAmount, index) => (
+
+                                        <Col key={index} style={{ marginTop: "20px" }}>
+                                            <Col style={{ marginBottom: "14px", marginTop: "14px" }}>
+                                                <SelectDropdownComponent
+                                                    placeholder="Country Selection"
+                                                    title="Country Selection"
+                                                    options={countryOptions}
+                                                    onChange={(value) => {
+
+                                                        setFieldValue(`plantype[${index}].country`, value);
+
+                                                    }}
+                                                />
+                                            </Col>
+                                            {/* <Col style={{ marginTop: "20px" }}>
                                     <label>Plan Subscription</label>
                                     <Col>
                                         <Col className='planName'>
@@ -178,43 +200,76 @@ export default function SubscriptionSetting() {
 
                                     </Col>
                                 </Col> */}
-                                <LabelInputComponent
-                                    title={`Plan Amount (Monthly)`}
-                                    value={planAmount}
-                                    onChange={(e) => {
-                                        const updatedPlanAmounts = [...planAmounts];
-                                        updatedPlanAmounts[index] = e.target.value;
-                                        setPlanAmounts(updatedPlanAmounts);
-                                    }}
-                                />
-                                {/* Conditionally render Remove button */}
-                                {index > 0 && (
-                                    <FilledButtonComponent
-                                        onClick={() => handleRemovePlanAmount(index)}
-                                        className={`${styles.deleteBtn}`}
-                                    >
-                                        <Image src={IMAGES.Delete} alt="" />
-                                    </FilledButtonComponent>
-                                )}
-                            </Col>
-                        ))}
-                        <Col style={{ marginTop: "1px" }}>
-                            <FilledButtonComponent onClick={handleAddPlanAmount} className={`${styles.deleteBtn}`}>
-                                <Image src={IMAGES.Add} alt="" />
-                            </FilledButtonComponent>
-                        </Col>
+                                            <LabelInputComponent
+                                                title={`Plan Amount (Monthly)`}
 
-                        <Col style={{ textAlign: "end", marginTop: "18px" }}>
-                            <FilledButtonComponent className="btn submit">Save</FilledButtonComponent>
-                        </Col>
-                    </Col>
-                </Col>
+                                                name={`plantype[${index}].amount`}
+                                            />
+
+
+
+                                            {/* Conditionally render Remove button */}
+                                            {index > 0 && (
+                                                <FilledButtonComponent
+                                                    onClick={() => setFieldValue(
+                                                        "plantype",
+                                                        values.plantype.filter((o, i) => i !== index)
+                                                    )
+                                                    }
+                                                    className={`${styles.deleteBtn}`}
+                                                >
+                                                    <Image src={IMAGES.Delete} alt="" />
+                                                </FilledButtonComponent>
+                                            )}
+                                        </Col>
+                                    ))}
+                                    <Col style={{ marginTop: "1px" }}>
+                                        <FilledButtonComponent onClick={() => {
+                                            setFieldValue(`plantype`, [...values?.plantype, {
+                                                country: '',
+                                                amount: ''
+                                            }])
+                                        }} className={`${styles.deleteBtn}`}>
+                                            <Image src={IMAGES.Add} alt="" />
+                                        </FilledButtonComponent>
+                                    </Col>
+
+
+                                    <Col style={{ textAlign: "end", marginTop: "18px" }}>
+                                        <button className="btn submit" type='submit'>Save</button>
+                                    </Col>
+                                </Col>
+                            </Col>
+
+
+                        </Form>
+                    )}
+                </Formik>
 
                 <Col className="tableBox">
                     <h3>View Subscription</h3>
-                    <DataTable rowData={data} colData={columns} />
+                    <DataTable rowData={sub && sub.length > 0 && sub.map((s, id) => (
+                        {
+                            key: id,
+                            id: parseInt(s?._id?.slice(-8), 12),
+                            plan_type: "Monthly",
+                            plan_name: s?.
+                                planname
+                            ,
+                            amount: s?.plantype?.length > 0 && s?.plantype?.map((am) => (`${am.amount} `))
+                            ,
+                            creation_date: moment(s?.updatedAt
+                            ).format('L'),
+                            option: (
+                                <Link href="/edit-user">
+                                    <Image src={IMAGES.Delete} alt="" style={{ width: "20px", height: "20px", objectFit: "contain" }} />
+                                </Link>
+                            ),
+                        }
+                    ))} colData={columns} />
                 </Col>
             </LayoutHoc >
+
         </>
     )
 }

@@ -6,36 +6,70 @@ import FilledButtonComponent from "../Button";
 import Link from "next/link";
 import Image from "next/image";
 import { IMAGES } from "@/assest/images";
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
+import * as yup from "yup";
 
 
 function LoginForm() {
-  return (
-    <div>
-      <Col>
-        <Row>
+  const initialvalue = {
+    email: "",
+    password: ""
+  }
+  const validationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email('Enter a valid email address')
+      .required('Email is required'),
+    password: yup
+      .string()
+      .min(5, 'Password must be at least 8 characters')
+      .required('Password is required'),
+  });
 
-          <Col md={24}>
-            <Col className={`${styles.rightBody}`}>
-              <div className={`${styles.loginBox}`}>
-                <Col className={`${styles.title}`}>
-                <h2>Tabla</h2>
+
+  return (
+    <>
+      <Formik
+        initialValues={initialvalue}
+        // validationSchema={validationSchema}
+
+        onSubmit={(values) => {
+
+
+          console.log(values, "sciehui");
+        }}
+      >
+        <Form>
+
+          <div>
+            <Col>
+              <Row>
+
+                <Col md={24}>
+                  <Col className={`${styles.rightBody}`}>
+                    <div className={`${styles.loginBox}`}>
+                      <Col className={`${styles.title}`}>
+                        <h2>Tabla</h2>
+                      </Col>
+                      {/* <Image src={IMAGES.Logo} alt="" /> */}
+                      <h3>LOGIN</h3>
+                      <LabelInputComponent title="Email" placeholder="Email" name="email" />
+                      <LabelInputComponent title="Password" placeholder="Password" name="password" />
+
+                      {" "}
+                      <button type="submit" className={`${styles.submitBtn}`}>
+                        Submit
+                      </button>
+
+                    </div>
+                  </Col>
                 </Col>
-                {/* <Image src={IMAGES.Logo} alt="" /> */}
-                <h3>LOGIN</h3>
-                <LabelInputComponent title="Email" placeholder="Email" />
-                <LabelInputComponent title="Password" placeholder="Password" />
-                <Link href="/dashboard">
-                  {" "}
-                  <FilledButtonComponent type="submit" onClick={() => console.log("Custom click handler")} className={`${styles.submitBtn}`}>
-                    Submit
-                  </FilledButtonComponent>
-                </Link>
-              </div>
+              </Row>
             </Col>
-          </Col>
-        </Row>
-      </Col>
-    </div>
+          </div>
+        </Form>
+      </Formik>
+    </>
   );
 }
 
