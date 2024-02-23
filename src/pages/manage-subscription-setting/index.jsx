@@ -59,21 +59,6 @@ export default function SubscriptionSetting() {
 
 
 
-    const data = [
-        {
-            key: "1",
-            id: "1",
-            plan_type: "Monthly",
-            plan_name: "Plan Subscription",
-            amount: "$2000",
-            creation_date: "30-10-22",
-            option: (
-                <Link href="/edit-user">
-                    <Image src={IMAGES.Delete} alt="" style={{ width: "20px", height: "20px", objectFit: "contain" }} />
-                </Link>
-            ),
-        },
-    ];
 
     const columns = [
         {

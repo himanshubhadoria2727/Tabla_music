@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { Select } from 'antd';
 
-const SearchCategory = ({ title, options, onCategoryChange }) => {
+const SearchCategory = ({ title, options, onCategoryChange, setFieldValue }) => {
   const [selectedValue, setSelectedValue] = useState(null);
 
   const handleChange = (value) => {
-    console.log('selected', value);
+    console.log('selectedfeef', value);
+    setFieldValue('category', value)
     setSelectedValue(value);
     onCategoryChange(value); // Call the callback function with the selected value
   };
@@ -19,7 +20,11 @@ const SearchCategory = ({ title, options, onCategoryChange }) => {
         defaultValue="Select Category"
         placeholder="Search"
         onChange={handleChange}
-        options={options}
+        options={options && options.length > 0 && options.map((cat) => {
+          return {
+            value: cat?._id, label: <span>{cat?.CategoryName}</span>
+          }
+        })}
       />
     </>
   );

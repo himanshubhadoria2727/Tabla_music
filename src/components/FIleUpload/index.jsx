@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, Col, Upload } from 'antd';
 
-const Fileuploader = ({ title, setFieldValue, index }) => {
+const Fileuploader = ({ title, setFieldValue, index, name }) => {
     const [fileList, setFileList] = useState([
 
     ]);
-    const handleChange = ({ fileList: newFileList }) => {
+    const handleChange = ({ fileList: newFileList, }) => {
 
         console.log(newFileList, "cheking");
-        setFieldValue(`taalfiles[${index}].filename`, newFileList)
+        console.log(name, "efhehfuefuu");
+        if (name) {
+            setFieldValue(name, newFileList[0])
+        }
         setFileList(newFileList)
     };
 

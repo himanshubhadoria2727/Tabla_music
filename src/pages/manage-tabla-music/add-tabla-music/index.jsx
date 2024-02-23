@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Row, Button } from 'antd';
 import LayoutHoc from '@/HOC/LayoutHoc';
 import FilledButtonComponent from '@/components/Button';
@@ -11,8 +11,17 @@ import Image from 'next/image';
 import LabelInputComponent from '@/components/TextFields/labelInput';
 import Link from 'next/link';
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
+import { getCategoryapi, getSubcategory } from '@/api/Categoryapi';
+import { addTabla } from '@/api/tabla';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import * as Yup from 'yup';
+
 
 export default function AddTabla() {
+    const router = useRouter()
+    const [RaagOption, setRaagOption] = useState([])
+    const [subRaagOption, setsubRaagOption] = useState([])
     const dynamicOptions = [
         {
             value: 'C',
@@ -167,16 +176,35 @@ export default function AddTabla() {
         taal: [{
             name: ""
         }],
-        taalfiles: [
-            {
-                filename: "",
-                bpm: ""
-            }
-        ]
 
+        bpm: ["20"],
+        taalfile: ""
 
     }
+    useEffect(() => {
+        getCategoryapi().then((data) => {
+            console.log(data, "defhrghf");
+            setRaagOption(data?.data?.allcategory)
+        })
+        getSubcategory().then((data) => {
+            console.log(data, "dhceugyur")
+            setsubRaagOption(data?.data)
+        })
+    }, [])
+    const tablaschema = Yup.object().shape({
+        pitch: Yup.string().required('Pitch is required'),
+        taalname: Yup.string().required('Taal Name is required'),
+        subtaalname: Yup.string().required('SubTaal Name is required'),
+        taal: Yup.array().of(
+            Yup.object().shape({
+                name: Yup.string().required('Taal Name is required')
+            })
+        ).min(1, 'At least one Taal is required'),
+        bpm: Yup.array().of(Yup.string().required('BPM is required')).min(1, 'At least one BPM is required'),
 
+    });
+
+    console.log(subRaagOption, "nduwuwfue");
 
     return (
 
@@ -185,11 +213,18 @@ export default function AddTabla() {
 
                 <Formik
                     initialValues={initialValues}
+                    validationSchema={tablaschema}
 
                     onSubmit={(values) => {
-
-
                         console.log(values, "sciehui");
+                        addTabla(values).then((data) => {
+                            console.log(data?.data?.message, "challllllllllllllllllllll");
+                            toast.success(`${data?.data?.message}`)
+                            router.push('/manage-tabla-music')
+
+
+                        })
+
                     }}
                 >
                     {({ setFieldValue, values }) => (
@@ -209,26 +244,34 @@ export default function AddTabla() {
                                         }}
                                         options={dynamicOptions}
                                     />
+                                    <ErrorMessage name='pitch' style={{ color: "red" }} />
                                 </Col>
                                 <Col className={styles.titleBox}>
                                     <SearchCategory
                                         title="Select Taal Name "
-                                        defaultValue={RaagOptions}
+                                        defaultValue={RaagOption}
                                         onChange={(value) => {
                                             setFieldValue("taalname", value)
                                         }}
-                                        options={RaagOptions}
+                                        options={RaagOption && RaagOption.length > 0 && RaagOption?.map((data) => ({
+                                            value: data?._id,
+                                            label: data?.CategoryName,
+                                        }))}
                                     />
+                                    <ErrorMessage name='taalname' style={{ color: "red" }} />
                                 </Col>
 
                                 <Col className={styles.titleBox}>
                                     <SearchCategory
                                         title="Select Sub Taal Name"
-                                        defaultValue={subraagValue}
+                                        defaultValue={subRaagOption}
                                         onChange={(value) => {
                                             setFieldValue("subtaalname", value)
                                         }}
-                                        options={SubRaagOptions}
+                                        options={subRaagOption && subRaagOption.length > 0 && subRaagOption?.map((data) => ({
+                                            value: data?._id,
+                                            label: data?.subCategory,
+                                        }))}
                                     />
                                 </Col>
                                 <Col className={styles.taalBox}>
@@ -241,6 +284,7 @@ export default function AddTabla() {
                                             <>
                                                 <Col md={2} key={index} className='taalInput'>
                                                     <LabelInputComponent name={`taal[${index}].name`} />
+                                                    <ErrorMessage name={`taal[${index}].name`} style={{ color: "red" }} />
                                                 </Col>
                                                 {index > 0 && (
 
@@ -266,20 +310,29 @@ export default function AddTabla() {
                                     </Col>
                                 </Col>
                                 {
-                                    values?.taalfiles?.length > 0 && values?.taalfiles?.map((taalfile, index) => (
+                                    values?.bpm?.length > 0 && values?.bpm?.map((taalfile, index) => (
                                         <Row key={index} className={`${styles.appendRow}`}>
                                             <Col md={11} className={`${styles.fileName}`}>
-                                                <Fileuploader
-                                                    title="Files(Mp3)"
-                                                    setFieldValue={setFieldValue}
-                                                    index={index}
+                                                <input type="file" onChange={(e) => {
+                                                    let Catfile = e.target.files[0]
+                                                    setFieldValue('taalfile', Catfile)
 
-                                                />
+                                                }} style={{
+                                                    width: "100%",
+                                                    borderRadius: '12px solid red',
+
+                                                    background: '#FFF',
+                                                    boxShadow: '0px 10px 30px 0px rgba(41, 17, 80, 0.05)',
+                                                    height: '44px',
+                                                    marginBottom: '18px',
+                                                }} />
+
                                             </Col>
                                             <Col md={1}></Col>
                                             <Col md={12}>
                                                 <Col className={`${styles.fileName}`}>
-                                                    <LabelInputComponent title="BPM" name={`taalfiles[${index}].bpm`} />
+                                                    <LabelInputComponent title="BPM" name={`bpm[${index}]`} />
+                                                    <ErrorMessage name={`bpm[${index}]`} style={{ color: "red" }} />
                                                 </Col>
 
                                             </Col>
@@ -287,13 +340,18 @@ export default function AddTabla() {
                                             {index > 0 && (
                                                 <Col style={{ width: "100%" }}>
 
-                                                    <Image src={IMAGES.Delete} alt="" onClick={() => removeFileSection(index)} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
+                                                    <Image src={IMAGES.Delete} alt="" onClick={() => {
+
+                                                        setFieldValue('bpm', values?.bpm?.filter((o, i) => i !== index))
+                                                    }} style={{ cursor: "pointer", height: "20px", width: "20px", marginTop: "12px" }} />
 
                                                 </Col>
                                             )}
                                             <Col >
 
-                                                <Image src={IMAGES.Add} onClick={addFileSection} alt="" style={{
+                                                <Image src={IMAGES.Add} onClick={() => {
+                                                    setFieldValue('bpm', [...values?.bpm, ""])
+                                                }} alt="" style={{
                                                     cursor: "pointer", height: "20px", width: "20px", position: " relative",
                                                     top: "15px"
                                                 }} />
