@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, Col, Upload } from 'antd';
 
-const Fileuploader = ({ title, setFieldValue, index, name }) => {
+
+const Fileuploader = ({ title, setFieldValue, index, name, count }) => {
     const [fileList, setFileList] = useState([
 
     ]);
@@ -10,9 +11,18 @@ const Fileuploader = ({ title, setFieldValue, index, name }) => {
 
         console.log(newFileList, "cheking");
         console.log(name, "efhehfuefuu");
-        if (name) {
-            setFieldValue(name, newFileList[0])
+        if (count === 0) {
+            setFieldValue(name, newFileList[0]?.originFileObj
+            )
+            return
         }
+        const allfiles = newFileList && newFileList?.length > 0 && newFileList?.map((data) => {
+            return data?.originFileObj
+
+        })
+        console.log(allfiles, "cheking all files");
+
+        setFieldValue(name, allfiles)
         setFileList(newFileList)
     };
 

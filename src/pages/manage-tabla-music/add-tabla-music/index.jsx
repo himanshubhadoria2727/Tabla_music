@@ -177,8 +177,8 @@ export default function AddTabla() {
             name: ""
         }],
 
-        bpm: ["20"],
-        taalfile: ""
+        bpm: [""],
+        taalfiles: []
 
     }
     useEffect(() => {
@@ -217,7 +217,22 @@ export default function AddTabla() {
 
                     onSubmit={(values) => {
                         console.log(values, "sciehui");
-                        addTabla(values).then((data) => {
+
+                        const formdata = new FormData();
+                        formdata.append("taalname", values?.taalname);
+                        formdata.append("subtaalname", values?.subtaalname);
+                        formdata.append("pitch", values?.pitch);
+
+                        for (let i = 0; i <= values?.taal.length; i++) {
+                            formdata.append(`taal[${i}][name]`, values?.taal[i]?.name);
+                        }
+                        for (let i = 0; i <= values?.bpm.length; i++) {
+                            formdata.append(`bpm[${i}]`, values?.bpm[i]);
+                            formdata.append("taalfiles", values?.taalfiles[i]);
+                        }
+
+
+                        addTabla(formdata).then((data) => {
                             console.log(data?.data?.message, "challllllllllllllllllllll");
                             toast.success(`${data?.data?.message}`)
                             router.push('/manage-tabla-music')
@@ -313,19 +328,21 @@ export default function AddTabla() {
                                     values?.bpm?.length > 0 && values?.bpm?.map((taalfile, index) => (
                                         <Row key={index} className={`${styles.appendRow}`}>
                                             <Col md={11} className={`${styles.fileName}`}>
-                                                <input type="file" onChange={(e) => {
-                                                    let Catfile = e.target.files[0]
-                                                    setFieldValue('taalfile', Catfile)
+                                                <input type="file"
+                                                    accept=".mp3"
+                                                    onChange={(e) => {
+                                                        let Catfile = e.target.files[0]
+                                                        setFieldValue('taalfiles', [...values?.taalfiles, Catfile])
 
-                                                }} style={{
-                                                    width: "100%",
-                                                    borderRadius: '12px solid red',
+                                                    }} style={{
+                                                        width: "100%",
+                                                        borderRadius: '12px solid red',
 
-                                                    background: '#FFF',
-                                                    boxShadow: '0px 10px 30px 0px rgba(41, 17, 80, 0.05)',
-                                                    height: '44px',
-                                                    marginBottom: '18px',
-                                                }} />
+                                                        background: '#FFF',
+                                                        boxShadow: '0px 10px 30px 0px rgba(41, 17, 80, 0.05)',
+                                                        height: '44px',
+                                                        marginBottom: '18px',
+                                                    }} />
 
                                             </Col>
                                             <Col md={1}></Col>
@@ -364,7 +381,7 @@ export default function AddTabla() {
 
 
                                 <Col style={{ textAlign: 'end', marginTop: '15px' }}>
-                                    <button className="btn submit" onClick={handleSave}>
+                                    <button className="btn submit" type='submit'>
                                         Save
                                     </button>
                                 </Col>

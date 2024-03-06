@@ -21,13 +21,11 @@ export default function AddCategory() {
     const initialState = {
         CategoryName: "",
         category: ""
-
     }
     const categorySchema = Yup.object().shape({
-        CategoryName: Yup.string().required('CategoryName is required'),
-        category: Yup.string().required('File is required'),
+        CategoryName: Yup.string().required('Category Name is required'),
+        category: Yup.string().required('Category is required'),
     });
-
 
     return (
         <>
@@ -85,7 +83,7 @@ export default function AddCategory() {
 
                                 </Col>
                                 <Col style={{ textAlign: "end", marginTop: "15px" }}>
-                                    <button className="btn submit">Save</button>
+                                    <button className="btn submit" type='submit'>Save</button>
                                 </Col>
                             </Col>
 

@@ -115,7 +115,7 @@ export default function ManageContent() {
           pagename: data?.title,
           action: (
             <>
-              <Link href="/edit-content">
+              <Link href={`/edit-content/${data?._id}`}>
                 <SVG.Edit />
               </Link>
 
