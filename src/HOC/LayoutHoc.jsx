@@ -15,7 +15,7 @@ const items = [
   {
     key: '1',
     label: (
-      <Link target="_blank" rel="noopener noreferrer" href="/">
+      <Link rel="noopener noreferrer" href="/">
         Log Out
       </Link>
     ),
