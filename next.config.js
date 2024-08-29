@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost'],
+    domains: ['localhost','main--tabla-admin.netlify.app'],
   },
   webpack(config) {
     config.module.rules.push({
