@@ -6,7 +6,7 @@ export const addCategory = createAsyncThunk(
   'category/addCategory',
   async (categoryData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/category/addCategory', categoryData);
+      const response = await axios.post('https://tabla-backend.onrender.com/api/category/addCategory', categoryData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
