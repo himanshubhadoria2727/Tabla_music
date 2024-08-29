@@ -11,23 +11,12 @@ import Lottie from "lottie-react";
 
 const { Header, Sider, Content } = Layout;
 
-const items = [
-  {
-    key: '1',
-    label: (
-      <Link rel="noopener noreferrer" href="/">
-        Log Out
-      </Link>
-    ),
-  },
 
-];
 const LayoutHoc = ({ children }) => {
   const [hide, setHide] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state
   const [animationData, setAnimationData] = useState(null);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,7 +44,28 @@ const LayoutHoc = ({ children }) => {
   }, []);
 
   const { colorBgContainer } = theme.useToken();
+  const router = useRouter();
 
+const items = [
+  {
+    key: '1',
+    label: (
+      <Link
+        href="/"
+        onClick={(e) => {
+          e.preventDefault(); // Prevent default link behavior
+          localStorage.removeItem('auth_token'); // Remove the auth token
+          // Redirect to home or another page
+          router.push('/'); 
+        }}
+        rel="noopener noreferrer"
+      >
+        Log Out
+      </Link>
+    ),
+  },
+
+];
   return (
     <>
 
@@ -86,7 +96,7 @@ const LayoutHoc = ({ children }) => {
             <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-tabla-music' || router.pathname === '/manage-tabla-music/add-tabla-music' ? 'settings active' : 'settings'}>
               <Link href="/manage-tabla-music">Manage Tabla Music</Link>
             </Menu.Item>
-            <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-tanpura' || router.pathname === '/manage-tanpura/add-tanpura' ? 'settings active' : 'settings'}>
+            {/* <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-tanpura' || router.pathname === '/manage-tanpura/add-tanpura' ? 'settings active' : 'settings'}>
               <Link href="/manage-tanpura">Manage Tanpura Music</Link>
             </Menu.Item>
             <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-surmandal' || router.pathname === '/manage-surmandal/add-surmandal' ? 'settings active' : 'settings'}>
@@ -94,7 +104,7 @@ const LayoutHoc = ({ children }) => {
             </Menu.Item>
             <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-surpeti' ? 'settings active' : 'settings'}>
               <Link href="/manage-surpeti">Manage Surpeti</Link>
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item icon={<SVG.User />} className={router.pathname === '/manage-user' ? 'settings active' : 'settings'}>
               <Link href="/manage-user">Manage Users</Link>
             </Menu.Item>

@@ -1,5 +1,5 @@
 const APIConstants = {
-    base_url: "http://localhost:8000",
+    base_url: "https://tabla-backend.onrender.com",
     // base_url: "http://digimonktech.com:1973",
 };
 

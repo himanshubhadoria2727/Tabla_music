@@ -3,6 +3,8 @@ import { Col, Row } from 'antd'
 import React from 'react'
 import styles from "./dashboard.module.css"
 import DateRangePickerComponent from "@/components/TextFields/datepicker";
+import { useEffect } from 'react';
+import { deleteduserapi, userapi } from "@/api/userapi";
 
 export default function Dashboard() {
     const Data = [
@@ -13,6 +15,18 @@ export default function Dashboard() {
        
        
       ];
+      useEffect(() => {
+        // Log the API call without parameters
+        console.log("Calling userapi with no parameters");
+      
+        userapi().then((data) => {
+          setuser(data?.data?.users);
+          console.log(data, "checking data");
+        }).catch(error => {
+          console.error("Error fetching data:", error);
+        });
+      
+      }, []);
     return (
         <>
             <LayoutHoc>

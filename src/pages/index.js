@@ -1,8 +1,21 @@
-import Head from "next/head";
-import LoginForm from "@/components/LoginForm";
-
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import LoginForm from '@/components/LoginForm';
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if auth_token exists in local storage
+    const authToken = localStorage.getItem('auth_token');
+
+    // Redirect to /dashboard if auth_token is present
+    if (authToken) {
+      router.push('/dashboard');
+    }
+  }, [router]);
+
   return (
     <>
       <Head>
