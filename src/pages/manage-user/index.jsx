@@ -181,9 +181,9 @@ function ManageUser() {
           {
             key: data?._id,
             creation_date: "26.7.2023",
-            user: "#1",
-            name: "John",
-            email: "praveen.vaidhya@gmail.com",
+            user: data?.user?._id,
+            name: "Jihn ",
+            email: data?.user?.email,
             number: data?.user?.phone_no,
             plan: data?.plan?.plantype[0]?.amount > 0 ? "paid" : "free",
             option: (

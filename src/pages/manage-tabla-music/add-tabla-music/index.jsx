@@ -205,34 +205,34 @@ export default function AddTabla() {
 
   console.log(subRaagOption, "nduwuwfue");
 
+  const handleSubmit = (values)=>{
+    const formdata = new FormData();
+    formdata.append("taalname", values?.taalname);
+    formdata.append("subtaalname", values?.subtaalname);
+    formdata.append("pitch", values?.pitch);
+
+    for (let i = 0; i <= values?.taal?.length; i++) {
+      formdata.append(`taal[${i}][name]`, values?.taal[i]?.name);
+    }
+    for (let i = 0; i <= values?.bpm?.length; i++) {
+      formdata.append(`bpm[${i}]`, values?.bpm[i]);
+      formdata.append("taalfiles", values?.taalfiles[i]);
+    }
+
+    addTabla(formdata).then((data) => {
+      console.log(data?.data?.message, "challllllllllllllllllllll");
+      toast.success(`${data?.data?.message}`);
+      router.back();
+    });
+  }
+
   return (
     <>
       <LayoutHoc>
         <Formik
           initialValues={initialValues}
           validationSchema={tablaschema}
-          onSubmit={(values) => {
-            console.log(values, "sciehui");
-
-            const formdata = new FormData();
-            formdata.append("taalname", values?.taalname);
-            formdata.append("subtaalname", values?.subtaalname);
-            formdata.append("pitch", values?.pitch);
-
-            for (let i = 0; i <= values?.taal.length; i++) {
-              formdata.append(`taal[${i}][name]`, values?.taal[i]?.name);
-            }
-            for (let i = 0; i <= values?.bpm.length; i++) {
-              formdata.append(`bpm[${i}]`, values?.bpm[i]);
-              formdata.append("taalfiles", values?.taalfiles[i]);
-            }
-
-            addTabla(formdata).then((data) => {
-              console.log(data?.data?.message, "challllllllllllllllllllll");
-              toast.success(`${data?.data?.message}`);
-              router.push("/manage-tabla-music");
-            });
-          }}
+          onSubmit={handleSubmit}
         >
           {({ setFieldValue, values }) => (
             <Form>
@@ -430,7 +430,7 @@ export default function AddTabla() {
                   ))}
 
                 <Col style={{ textAlign: "end", marginTop: "15px" }}>
-                  <button className="btn submit" type="submit">
+                  <button className="btn submit" type="submit" onClick={handleSubmit}>
                     Save
                   </button>
                 </Col>

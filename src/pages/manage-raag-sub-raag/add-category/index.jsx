@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { SVG } from '@/assest/svg';
 import { addCategory } from '@/features/category/categorySlice';
 import { useRouter } from 'next/router';
+
 export default function AddCategory() {
     const [categoryName, setCategoryName] = useState('');
     const [categoryImage, setCategoryImage] = useState(null);
@@ -16,13 +17,45 @@ export default function AddCategory() {
     const router = useRouter();
     const { status, error } = useSelector((state) => state.category);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (!categoryName) {
+            alert("Category name is required");
+            return;
+        }
+        if (!categoryImage) {
+            alert("Category image is required");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('CategoryName', categoryName);
-        console.log('form data',formData)
         formData.append('image', categoryImage);
-        dispatch(addCategory(formData));
-        router.back();
+
+        // Debugging FormData entries
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+            if (key === 'image') {
+                console.log('Image File:', value);
+                console.log('Image File Type:', value.type);
+                console.log('Image File Size:', value.size);
+            }
+        }
+
+        try {
+            const result = await dispatch(addCategory(formData)).unwrap();
+            console.log("Dispatch result:", result);
+            router.back();
+        } catch (error) {
+            console.error("Error during category addition:", error);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            console.log('Selected file:', file);
+            setCategoryImage(file);
+        }
     };
 
     return (
@@ -47,9 +80,8 @@ export default function AddCategory() {
                 <Col>
                     <LabelInputComponent 
                         type="file" 
-                        enctype="multipart/form-data"
                         title="Category Image" 
-                        onChange={(e) => setCategoryImage(e.target.files[0])} 
+                        onChange={handleFileChange} 
                     />
                 </Col>
                 <Col style={{ textAlign: "end", marginTop: "15px" }}>
@@ -59,7 +91,9 @@ export default function AddCategory() {
                 </Col>
             </Col>
             {status === 'loading' && <p>Saving category...</p>}
-            {status === 'failed' && <p>Error: {error}</p>}
+            {status === 'failed' && (
+                <p>Error: {typeof error === 'string' ? error : 'An error occurred'}</p>
+            )}
         </LayoutHoc>
     );
 }
